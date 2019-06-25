@@ -1,0 +1,268 @@
+/*
+ * Copyright (c) 2016, The Linux Foundation. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+/dts-v1/;
+
+#include "msm8940.dtsi"
+#include "msm8940-pmi8937-mtp.dtsi"
+
+/ {
+	model = "Qualcomm Technologies, Inc. MSM8940-PMI8937 MTP";
+	compatible = "qcom,msm8940-mtp", "qcom,msm8940", "qcom,mtp";
+	qcom,board-id= <8 0>;
+	qcom,pmic-id = <0x10019 0x0 0x0 0x0>;
+};
+
+&pm8937_mpps {
+	mpp@a100 { /*MPP_02 for ADC*/
+		status = "okay";
+	};
+};
+
+&pm8937_vadc {
+	chan@11 {
+		label = "batt_rid";
+		reg = <0x11>;
+		qcom,decimation = <0>;
+		qcom,pre-div-channel-scaling = <0>;
+		qcom,calibration-type = "ratiometric"; //absolute 625mV or 1.25V
+		qcom,scale-function = <0>;//0 means c raw adc code to volt, 2 is for tempratue
+		qcom,hw-settle-time = <2>;//2 means 200ms
+		qcom,fast-avg-setup = <0>;//0 with only one average measurement
+
+		/delete-property/ qcom,vadc-thermal-node;
+		status = "okay";
+	};
+};
+
+&i2c_3 {
+     status = "ok";
+     clock-frequency = <400000>;
+     himax@48 {
+           compatible = "himax,hxcommon";
+           reg = <0x48>;
+           interrupt-parent = <&tlmm>;
+           interrupts = <65 0x2>;
+           //avdd-supply = <&pm8937_l6>;
+           //vcc_i2c-supply = <&pm8937_l5>;
+           /* pins used by touchscreen */
+           pinctrl-names = "pmx_ts_active",
+                             "pmx_ts_suspend",
+                             "pmx_ts_release";
+           pinctrl-0 = <&ts_int_active &ts_reset_active>;
+           pinctrl-1 = <&ts_int_suspend &ts_reset_suspend>;
+           pinctrl-2 = <&ts_release>;
+           himax,rst-gpio = <&tlmm 64 0x00>;
+           himax,irq-gpio = <&tlmm 65 0x02>;
+           himax,display-coords = <0 720 0 1440>;
+           himax,panel-coords = <0 720 0 1440>;
+           report_type = <1>;
+     };
+
+     focaltech@38{
+           compatible = "focaltech,fts";
+           reg = <0x38>;
+           interrupt-parent = <&tlmm>;
+           interrupts = <65 0x02>;
+           focaltech,reset-gpio = <&tlmm 64 0x01>;
+           focaltech,irq-gpio = <&tlmm 65 0x02>;
+           focaltech,max-touch-number = <10>;
+           focaltech,display-coords = <0 0 720 1440>;
+
+           //focaltech,have-key;
+           //focaltech,key-number = <3>;
+           //focaltech,keys = <139 102 158>;
+           //focaltech,key-y-coord = <2000>;
+           //focaltech,key-x-coords = <200 600 800>;
+     };
+};
+
+&i2c_3 {
+			awinic@45 {
+				compatible = "awinic,aw2013";
+				reg = <0x45>;
+				aw2013,blue {
+				aw2013,name = "blue";
+				aw2013,id = <0>;
+				aw2013,max-brightness = <150>;
+				aw2013,max-current = <1>;
+				aw2013,rise-time-ms = <2>;
+				aw2013,hold-time-ms = <1>;
+				aw2013,fall-time-ms = <2>;
+				aw2013,off-time-ms = <3>;
+
+				aw2023,name = "blue";
+				aw2023,id = <0>;
+				aw2023,imax = <2>;
+				aw2023,led-current = <3>;
+				aw2023,max-brightness = <150>;
+				aw2023,rise-time-ms = <6>;
+				aw2023,hold-time-ms = <0>;
+				aw2023,fall-time-ms = <6>;
+				aw2023,off-time-ms = <4>;
+				};
+
+				aw2013,green {
+				aw2013,name = "green";
+				aw2013,id = <1>;
+				aw2013,max-brightness = <150>;
+				aw2013,max-current = <1>;
+				aw2013,rise-time-ms = <2>;
+				aw2013,hold-time-ms = <1>;
+				aw2013,fall-time-ms = <2>;
+				aw2013,off-time-ms = <3>;
+
+				aw2023,name = "green";
+				aw2023,id = <1>;
+				aw2023,imax = <2>;
+				aw2023,led-current = <3>;
+				aw2023,max-brightness = <150>;
+				aw2023,rise-time-ms = <6>;
+				aw2023,hold-time-ms = <0>;
+				aw2023,fall-time-ms = <6>;
+				aw2023,off-time-ms = <4>;
+				};
+
+				aw2013,red {
+				aw2013,name = "red";
+				aw2013,id = <2>;
+				aw2013,max-brightness = <150>;
+				aw2013,max-current = <1>;
+				aw2013,rise-time-ms = <1>;//2 to 1
+				aw2013,hold-time-ms = <1>;//1 to 1
+				aw2013,fall-time-ms = <1>; //2 to 1
+				aw2013,off-time-ms = <5>; //3 to 5
+
+				aw2023,name = "red";
+				aw2023,id = <2>;
+				aw2023,imax = <2>;
+				aw2023,led-current = <3>;
+				aw2023,max-brightness = <150>;
+				aw2023,rise-time-ms = <10>;
+				aw2023,hold-time-ms = <0>;
+				aw2023,fall-time-ms = <10>;
+				aw2023,off-time-ms = <6>;
+				};
+
+				aw2013,orange {
+				aw2013,name = "orange";
+				aw2013,id = <3>;
+				aw2013,max-brightness = <255>;
+				aw2013,max-current = <1>;
+				aw2013,rise-time-ms = <2>;
+				aw2013,hold-time-ms = <1>;
+				aw2013,fall-time-ms = <2>;
+				aw2013,off-time-ms = <3>;
+
+				aw2023,name = "orange";
+				aw2023,id = <3>;
+				aw2023,imax = <2>;
+				aw2023,led-current = <3>;
+				aw2023,max-brightness = <255>;
+				aw2023,rise-time-ms = <6>;
+				aw2023,hold-time-ms = <0>;
+				aw2023,fall-time-ms = <6>;
+				aw2023,off-time-ms = <4>;
+				};
+            };
+};
+&i2c_5 {
+	status = "ok";
+
+        bq27426@55 {
+            compatible = "ti,bq27426";
+            reg = <0x55>;
+            interrupt-parent = <&tlmm>;
+            interrupts = <62 2>;
+            pinctrl-names = "default";
+            pinctrl-0 = <&bq_int_default>;
+
+            vdd-supply = <&pm8937_l16>;
+            ti,battery-type-b = "feimaotui_3080mah";
+            ti,battery-type-a = "guangyu_3080mah";
+            ti,batt-profile-select;
+            qcom,batt_id-vadc = <&pm8937_vadc>;
+            ti,profile-a-rid-kohm = <22>;
+            ti,profile-b-rid-kohm = <110>;
+            ti,batt-id-vref-uv = <1800000>;
+            ti,batt-id-rpullup-kohm = <68>;
+
+            agassiz,force-select-profile-b;
+        };
+
+
+	bq2560x_otg_supply: bq2560x@6B {
+            compatible = "ti,bq25601-charger";
+            reg = <0x6B>;
+            interrupt-parent = <&tlmm>;
+            interrupts = <61 2>;
+            pinctrl-names = "default";
+            pinctrl-0 = <&smb_int_default>;
+
+            regulator-name = "bq2560x_otg_vreg";
+            
+
+            ti,bq2560x,chip-enable-gpio = <25>;
+            ti,bq2560x,usb-vlim = <4500>;
+            ti,bq2560x,usb-ilim = <500>;
+            ti,bq2560x,usb-vreg = <4400>;
+            ti,bq2560x,usb-ichg = <500>;
+
+            ti,bq2560x,ta-vlim = <4500>;
+            ti,bq2560x,ta-ilim = <1800>;
+            ti,bq2560x,ta-vreg = <4400>;
+            ti,bq2560x,ta-ichg = <1750>;
+
+            ti,bq2560x,precharge-current = <256>;
+            ti,bq2560x,termination-current = <60>;
+            ti,bq2560x,boost-voltage = <4998>;
+            ti,bq2560x,boost-current = <500>;
+            ti,bq2560x,enable_term;
+            ti,bq2560x,stat-pin-ctrl = <3>;
+            ti,bq2560x,vac-ovp-threshold = <6200>;
+
+            ti,bq2560x,jeita-hot-degc = <550>;
+            ti,bq2560x,jeita-warm-degc = <450>;
+            ti,bq2560x,jeita-cool-degc = <100>;
+            ti,bq2560x,jeita-cool-xiaomi-degc = <100>;
+            ti,bq2560x,jeita-cold-degc = <0>;
+
+            ti,bq2560x,jeita-hot-hysteresis = <50>;
+            ti,bq2560x,jeita-cold-hysteresis = <0>;
+
+            ti,bq2560x,jeita-cool-ma = <900>;
+            ti,bq2560x,jeita-cool-xiaomi-ma = <900>;
+            ti,bq2560x,jeita-cool-mv = <4400>;
+            ti,bq2560x,jeita-warm-ma = <900>;
+            ti,bq2560x,jeita-warm-mv = <4400>;
+
+            ti,bq2560x,software-jeita-supported;
+
+            qcom,thermal-mitigation = <1750 1000 500 200 0>;
+        };
+};
+
+&usb_otg{
+
+	interrupts = <0 134 0>,<0 140 0>;
+	interrupt-names = "core_irq", "async_irq";
+
+	qcom,hsusb-otg-mode = <3>;
+	qcom,usbid-gpio = <&tlmm 41 0x00>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&usbid_default>;
+	//qcom,hsusb-otg-mode = <3>;
+	vbus_otg-supply = <&bq2560x_otg_supply>;
+	qcom,hsusb-otg-phy-init-seq = <0x39 0x81 0x37 0x82 0xffffffff>;
+ };
+#include "l2300-audio.dtsi" //merge from L2300 android O

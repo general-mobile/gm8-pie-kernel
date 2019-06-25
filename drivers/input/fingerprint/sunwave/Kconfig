@@ -1,0 +1,13 @@
+#
+# Input device configuration
+#
+
+menu "Fingerprint device support"
+
+config FINGERPRINT_SUNWAVE_FINGER
+	tristate "SUNWAVE_FINGER fingerprint drvier support"
+	help
+	  Say Y here to enable SUNWAVE_FINGER fingerprint driver support!
+	  
+endmenu
+
